@@ -57,17 +57,18 @@ const ungroupColumn = columnKey => groupBy => {
 const ConnectList = (props) => {
   const [groupBy, setGroupBy] = useState([]);
   const groupedRows = Data.Selectors.getRows({ rows, groupBy });
-  // useEffect(() => {
-  //   let realmID = props.realmID;
-  //   axios
-  //   .get(`/api_call`, {realmID: realmID})
-  //   .then((res) => {
+
+  useEffect(() => {
+    let realmID = props.realmID;
+    axios
+    .get(`/api_call/${realmID}`, {})
+    .then((res) => {
       
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
-  // });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  });
   
   return (
     <DraggableContainer>

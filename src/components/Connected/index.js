@@ -32,6 +32,8 @@ export default class Connected extends Component {
   }
 
   apicall(realmID) {
+    let div = document.getElementById('result');
+    div.innerHTML = "Loading...";
     this.setState(currentState => {
       return {
         ...currentState,
