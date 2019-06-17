@@ -1,25 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ReactDataGrid from 'react-data-grid';
 import { ToolsPanel, Data, Draggable } from "react-data-grid-addons";
-import axios from 'axios';
 
 const DraggableContainer = Draggable.Container;
 const Toolbar = ToolsPanel.AdvancedToolbar;
 const GroupedColumnsPanel = ToolsPanel.GroupedColumnsPanel;
-
-const columns = [
-  { key: 'id', name: '#', resizable: true, draggable: true},
-  { key: 'rid', name: 'RealmID', resizable: true, draggable: true },
-  { key: 'api', name: 'QuickBooks API Call', resizable: true, draggable: true },
-  { key: 'refresh', name: 'Refresh Token Call', resizable: true, draggable: true },
-  { key: 'revoke', name: 'Revoke Token Call', resizable: true, draggable: true }
-];
-
-const rows = [
-  {id: 0, rid: 0, api: 'row1', refersh: 20, revoke: 'aaaaaaaa'},
-  {id: 1, rid: 1, api: 'row2', refersh: 30, revoke: 'bbbbbbbb'},
-  {id: 2, rid: 2, api: 'row3', refersh: 40, revoke: 'cccccccc'},
-];
 
 const CustomToolbar = ({
   groupBy,
@@ -37,7 +22,7 @@ const CustomToolbar = ({
   );
 };
 
-const groupColumn = columnKey => groupBy => {
+const groupColumn = (columns, columnKey) => groupBy => {
   const columnGroups = groupBy.slice(0);
   const activeColumn = columns.find(c => c.key === columnKey);
   const isNotInGroups =
@@ -56,20 +41,14 @@ const ungroupColumn = columnKey => groupBy => {
 
 const ConnectList = (props) => {
   const [groupBy, setGroupBy] = useState([]);
+
+  const rows = props.datainfo.rows;
+  const columns = props.datainfo.columns;
+
   const groupedRows = Data.Selectors.getRows({ rows, groupBy });
 
-  useEffect(() => {
-    let realmID = props.realmID;
-    axios
-    .get(`/api_call/${realmID}`, {})
-    .then((res) => {
-      
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  });
-  
+  console.log(rows);
+
   return (
     <DraggableContainer>
       <ReactDataGrid
@@ -81,7 +60,7 @@ const ConnectList = (props) => {
         toolbar={
           <CustomToolbar
             groupBy={groupBy}
-            onColumnGroupAdded={columnKey => setGroupBy(groupColumn(columnKey))}
+            onColumnGroupAdded={columnKey => setGroupBy(groupColumn(columns, columnKey))}
             onColumnGroupDeleted={columnKey => setGroupBy(ungroupColumn(columnKey))}
           />
         }
