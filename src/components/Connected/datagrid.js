@@ -50,7 +50,7 @@ const CustomRowRenderer = (props) => {
             <strong>Total: {" "}
               {
                 Object.keys(row.total).map((key, i) => {
-                  let ret = key + "(" + Math.round(Number(row.total[key]), 2) + ")";
+                  let ret = key + "(" + Number(row.total[key]).toFixed(2) + ")";
                   if( i + 1 < Object.keys(row.total).length ) {
                     ret += ", ";
                   }
