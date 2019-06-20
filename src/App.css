@@ -43,13 +43,24 @@ a:visited {
 .imgLink {
   text-decoration: none;
   display: inline-block;
-  margin: 10px;
-}
-
-#result {
-  white-space: pre-wrap;
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
 }
 
 .connectinfo {
   margin-bottom: 20px;
+}
+
+.load-spinner {
+  height: 200px;
+  padding-top: 100px;
+}
+
+.load-spinner .spinner {
+  margin: auto 30%;
+}
+
+.line-break {
+  white-space: pre-wrap;
 }

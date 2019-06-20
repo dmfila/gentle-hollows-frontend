@@ -6,7 +6,7 @@ import {
   blackColor,
   grayColor,
   hexToRgb
-} from "react-material/assets/jss/material-dashboard-react";
+} from "react-material/assets/jss/material-dashboard-react.jsx";
 
 const dropdownStyle = theme => ({
   buttonLink: {

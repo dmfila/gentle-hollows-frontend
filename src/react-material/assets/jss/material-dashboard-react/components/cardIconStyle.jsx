@@ -6,7 +6,7 @@ import {
   primaryCardHeader,
   roseCardHeader,
   grayColor
-} from "react-material/assets/jss/material-dashboard-react";
+} from "react-material/assets/jss/material-dashboard-react.jsx";
 
 const cardIconStyle = {
   cardIcon: {

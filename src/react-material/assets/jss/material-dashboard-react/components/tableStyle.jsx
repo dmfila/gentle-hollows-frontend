@@ -7,7 +7,7 @@ import {
   roseColor,
   grayColor,
   defaultFont
-} from "react-material/assets/jss/material-dashboard-react";
+} from "react-material/assets/jss/material-dashboard-react.jsx";
 
 const tableStyle = theme => ({
   warningTableHeader: {
@@ -42,13 +42,14 @@ const tableStyle = theme => ({
   tableHeadCell: {
     color: "inherit",
     ...defaultFont,
-    fontSize: "1em"
+    fontSize: "1.5em"
   },
   tableCell: {
     ...defaultFont,
     lineHeight: "1.42857143",
     padding: "12px 8px",
-    verticalAlign: "middle"
+    verticalAlign: "middle",
+    fontSize: "1.5em"
   },
   tableResponsive: {
     width: "100%",

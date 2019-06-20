@@ -1,29 +1,88 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
 import axios from 'axios';
+import withStyles from "@material-ui/core/styles/withStyles";
 
 import Table from 'react-material/components/Table/Table';
 import Button from 'react-material/components/CustomButtons/Button';
-import ConnectList from './connectlist';
+import GridContainer from 'react-material/components/Grid/GridContainer';
+import GridItem from 'react-material/components/Grid/GridItem';
+import Card from "react-material/components/Card/Card.jsx";
+import CardHeader from "react-material/components/Card/CardHeader.jsx";
+import CardBody from "react-material/components/Card/CardBody.jsx";
+import Spinner from 'react-spinner-material';
+
+import CustomDataGrid from './datagrid';
 import config from 'config.json';
 
 const isEmptyObj = object => !Object.getOwnPropertySymbols(object).length && !Object.getOwnPropertyNames(object).length;
 
-export default class Connected extends Component {
+const styles = {
+  cardCategoryWhite: {
+    "&,& a,& a:hover,& a:focus": {
+      color: "rgba(255,255,255,.62)",
+      margin: "0",
+      fontSize: "14px",
+      marginTop: "0",
+      marginBottom: "0"
+    },
+    "& a,& a:hover,& a:focus": {
+      color: "#FFFFFF"
+    }
+  },
+  cardTitleWhite: {
+    color: "#FFFFFF",
+    marginTop: "0px",
+    minHeight: "auto",
+    fontWeight: "300",
+    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+    marginBottom: "3px",
+    fontSize: "1.5em",
+    "& small": {
+      color: "#777",
+      fontSize: "100%",
+      fontWeight: "400",
+      lineHeight: "1"
+    }
+  },
+  cardDataGrid: {
+    fontWeight: "300",
+    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+    fontSize: "1.5em"
+  },
+  showSpinner: {
+    margin: "auto 0px"
+  }
+};
+
+class Connected extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       quickBooks: [],
-      message: null,
-      datainfo: null
+      visible: false,
+      info: null,
+      datalist: null
     };
 
+    this.initialize = this.initialize.bind(this);
     this.lanchPopup = this.lanchPopup.bind(this);
     this.apicall = this.apicall.bind(this);
     this.refreshCall = this.refreshCall.bind(this);
     this.revokeCall = this.revokeCall.bind(this);
     this.getConnects = this.getConnects.bind(this);
+  }
+
+  initialize() {
+    this.setState(currentState => {
+      return {
+        ...currentState,
+        visible: true,
+        info: null,
+        datalist: null
+      }
+    });
   }
 
   lanchPopup(path) {
@@ -35,20 +94,14 @@ export default class Connected extends Component {
   }
 
   apicall(realmID) {
-    this.setState(currentState => {
-      return {
-        ...currentState,
-        message: "Loading...",
-        datainfo: null
-      }
-    });
+    this.initialize();
 
     axios
     .get(`${config.API_URL}/dmtest/api_call?realmID=${realmID}`, {})
     .then((res) => {
       let repo = res.data;
 
-      let info = `Report Name - ${repo['Header']['ReportName']}\nFor Date: ${repo['Header']['DateMacro']} (${repo['Header']['StartPeriod']} - ${repo['Header']['EndPeriod']})\nCurrency: ${repo['Header']['Currency']}\n`;
+      let info = `Report Name - ${repo['Header']['ReportName']}\nFor Date: ${repo['Header']['DateMacro']} (${repo['Header']['StartPeriod']} - ${repo['Header']['EndPeriod']})\nCurrency: ${repo['Header']['Currency']}`;
 
       let rows=[], columns=[], creditKey;
       repo['Columns']['Column'].forEach((column, headerKey) => {
@@ -81,8 +134,9 @@ export default class Connected extends Component {
       this.setState(currentState => {
         return {
           ...currentState,
-          message: info,
-          datainfo: {
+          visible: false,
+          info: info,
+          datalist: {
             rows: rows,
             columns: columns
           }
@@ -95,13 +149,7 @@ export default class Connected extends Component {
   }
 
   refreshCall(realmID) {
-    this.setState(currentState => {
-      return {
-        ...currentState,
-        message: "Loading...",
-        datainfo: null
-      }
-    });
+    this.initialize();
 
     axios
     .get(`${config.API_URL}/api_call/refresh?realmID=${realmID}`, {})
@@ -110,8 +158,9 @@ export default class Connected extends Component {
       this.setState(currentState => {
         return {
           ...currentState,
-          message: info,
-          datainfo: null
+          visible: false,
+          info: info,
+          datalist: null
         }
       });
     })
@@ -121,6 +170,8 @@ export default class Connected extends Component {
   }
 
   revokeCall(realmID) {
+    this.initialize();
+
     axios
     .get(`${config.API_URL}/api_call/revoke?realmID=${realmID}`, {})
     .then((res) => {
@@ -149,8 +200,9 @@ export default class Connected extends Component {
       }
       self.setState({
           quickBooks: data,
-          message: null,
-          datainfo: null
+          visible: false,
+          info: null,
+          datalist: null
       });
       console.log("Get QuickBooks Success");
     })
@@ -164,40 +216,66 @@ export default class Connected extends Component {
   }
 
   render() {
+    const { classes } = this.props;
+
     return (
-      <div className="container">
-        <br /><br /><br />
-        <div className="jumbotron border border-primary">
-          <p style={{color: "red"}}>Welcome!</p>
-          <p style={{color: "red"}}>Would you like to make an API call?</p>
-
-          <div className="jumbotron border border-primary">
-            {/* <ul className="dropdown-menu"> */}
-              {/* <li className=""> */}
-                <a className="img-holder imgLink" href="#" onClick={() => {this.lanchPopup('/sign_in_with_intuit')}} >
+      <div>
+        <GridContainer>
+          <GridItem xs={12} sm={4} md={8}>
+            <Card>
+              <CardHeader color="primary">
+                <div className={classes.cardTitleWhite}>
+                  <a className="img-holder imgLink" href="#" onClick={() => {this.lanchPopup('/sign_in_with_intuit')}} >
                     <img style={{height: "40px"}} src="/images/IntuitSignIn-lg-white@2x.jpg" alt="..."/>
-                </a>
-                <a className="img-holder imgLink" href="#" onClick={() => {this.lanchPopup('/connect_to_quickbooks')}}>
+                  </a>
+                  <a className="img-holder imgLink" href="#" onClick={() => {this.lanchPopup('/connect_to_quickbooks')}}>
                     <img style={{height: "40px"}} src="/images/C2QB_white_btn_lg_default.png" alt="..."/>
-                </a>
-              {/* </li> */}
-            {/* </ul> */}
-          </div>
-
-          <Table
-            tableHeaderColor="warning"
-            tableHead={["#", "RealmID", "QuickBooks API Call", "Refresh Token Call", "Revoke Token Call"]}
-            tableData={this.state.quickBooks}
-          />
-        </div>
-        <div id="result">
-          {this.state.message ? this.state.message: ""}
-        </div>
-        <hr/>
-        <div id="datagrid">
-          {this.state.datainfo ? <ConnectList datainfo={this.state.datainfo}/> : null}
-        </div>
+                  </a>
+                </div>
+                <p className={classes.cardCategoryWhite}>
+                  Would you like to make an API call?
+                </p>
+              </CardHeader>
+              <CardBody>
+                <Table
+                  tableHeaderColor="warning"
+                  tableHead={["#", "RealmID", "QuickBooks API Call", "Refresh Token Call", "Revoke Token Call"]}
+                  tableData={this.state.quickBooks}
+                />
+              </CardBody>
+            </Card>
+          </GridItem>
+          {this.state.visible ? 
+          <GridItem xs={12} sm={12} md={12}>
+            <div className={"load-spinner"}>
+              <Spinner size={80} spinnerColor={"#333"} spinnerWidth={2} className={classes.showSpinner}/>
+            </div>
+          </GridItem>
+          :
+          this.state.info ?
+          <GridItem xs={12} sm={6} md={6}>
+            <Card plain>
+              <CardHeader plain color="warning" xs={3} sm={3} md={4}>
+                <p className={"line-break"}>
+                  {this.state.info}
+                </p>
+              </CardHeader>
+            </Card>
+          </GridItem>
+          :
+            null
+          }
+          {this.state.datalist ?
+          <GridItem xs={12} sm={12} md={12}>
+            <CustomDataGrid datainfo={this.state.datalist}/>
+          </GridItem>
+          :
+          null
+          }
+        </GridContainer>
       </div>
     )
   }
 }
+
+export default withStyles(styles)(Connected);
